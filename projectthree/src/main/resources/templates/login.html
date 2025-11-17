@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"><title>Login | Hotel Booking</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{background:linear-gradient(135deg,#74ebd5,#ACB6E5);font-family:'Poppins',sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;}
+.login-box{background:white;padding:30px;border-radius:12px;width:90%;max-width:400px;box-shadow:0 4px 12px rgba(0,0,0,0.2);}
+h2{text-align:center;}
+input,button{width:100%;padding:10px;margin:10px 0;border-radius:8px;border:1px solid #ccc;}
+button{background:#3498db;color:white;border:none;cursor:pointer;}
+button:hover{background:#2980b9;}
+</style>
+</head>
+<body>
+<div class="login-box">
+<h2>Login</h2>
+<form onsubmit="loginUser(event)">
+  <input type="email" name="username" placeholder="Email" required>
+  <input type="password" name="password" placeholder="Password" required>
+  <button type="submit">Login</button>
+</form>
+<p style="text-align:center;">Don't have an account? <a th:href="@{/register}">Register</a></p>
+</div>
+<script>
+async function loginUser(e) {
+  e.preventDefault();
+
+  const login = {
+    email: document.querySelector('input[name="username"]').value.trim(),
+    password: document.querySelector('input[name="password"]').value.trim()
+  };
+
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(login)
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.status === "success") {
+      alert("✅ " + data.message);
+
+      // Save user info in localStorage for session tracking
+      localStorage.setItem('userEmail', data.email);
+      localStorage.setItem('userRole', data.role);
+
+      // 🚀 Redirect based on role
+      if (data.role === "ADMIN") {
+        window.location.href = '/admin-dashboard';
+      } else {
+        window.location.href = '/user-dashboard';
+      }
+    } else {
+      alert("❌ " + (data.message || "Invalid credentials"));
+    }
+  } catch (err) {
+    console.error("Error:", err);
+    alert("⚠️ Network or server error");
+  }
+}
+</script>
+
+
+</body>
+</html>

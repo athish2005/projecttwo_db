@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Rooms</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{font-family:'Poppins',sans-serif;background:#f9f9f9;padding:20px;}
+.room{background:white;border-radius:8px;margin:10px 0;padding:15px;box-shadow:0 2px 5px rgba(0,0,0,0.1);}
+button{background:#2ecc71;color:white;border:none;padding:8px 15px;border-radius:6px;cursor:pointer;}
+</style>
+</head>
+<body>
+<h2>🛏️ Rooms</h2>
+<div id="roomList"></div>
+<script>
+const urlParams=new URLSearchParams(window.location.search);
+const hotelId=urlParams.get('hotelId');
+async function loadRooms(){
+const res=await fetch(`/api/rooms/hotel/${hotelId}`);
+const data=await res.json();
+const list=document.getElementById('roomList');
+data.forEach(r=>{
+list.innerHTML+=`<div class='room'>
+<h3>${r.roomType}</h3><p>₹${r.price}</p>
+<button onclick="bookRoom(${r.id})">Book Now</button></div>`;
+});
+}
+function bookRoom(id){window.location.href='/booking?roomId='+id;}
+loadRooms();
+</script>
+</body></html>

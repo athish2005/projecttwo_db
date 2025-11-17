@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Booking</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{font-family:'Poppins',sans-serif;background:#f1f1f1;padding:20px;}
+form{background:white;padding:20px;border-radius:12px;max-width:400px;margin:auto;box-shadow:0 3px 8px rgba(0,0,0,0.1);}
+input,button{width:100%;margin:10px 0;padding:10px;border-radius:8px;border:1px solid #ccc;}
+button{background:#3498db;color:white;border:none;}
+</style>
+</head>
+<body>
+<h2 style="text-align:center;">📅 Book Your Stay</h2>
+<form onsubmit="bookRoom(event)">
+<label>Check-In:</label><input type="date" id="checkIn" required>
+<label>Check-Out:</label><input type="date" id="checkOut" required>
+<button type="submit">Confirm Booking</button>
+</form>
+<script>
+const urlParams=new URLSearchParams(window.location.search);
+const roomId=urlParams.get('roomId');
+const email=localStorage.getItem('userEmail');
+async function bookRoom(e){
+e.preventDefault();
+const userRes=await fetch(`/api/users/email/${email}`);
+const user=await userRes.json();
+const res=await fetch(`/api/bookings?userId=${user.id}&roomId=${roomId}&checkIn=${checkIn.value}&checkOut=${checkOut.value}`,{method:'POST'});
+if(res.ok){alert("✅ Booking confirmed! Redirecting to payment...");window.location.href='/payment-success';}
+else alert("❌ Booking failed");
+}
+</script>
+</body></html>
